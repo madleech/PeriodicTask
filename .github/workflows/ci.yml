@@ -39,10 +39,6 @@ jobs:
           - fqbn: arduino:avr:uno
             platforms: |
               - name: arduino:avr
-          - fqbn: esp32:esp32:esp32
-            platforms: |
-              - name: esp32:esp32
-                source-url: https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
           - fqbn: esp8266:esp8266:generic
             platforms: |
               - name: esp8266:esp8266
