@@ -105,6 +105,27 @@ void test_stop_and_resume(void)
 	TEST_ASSERT_TRUE(task.tick());
 }
 
+// Timing stays correct across the 32-bit millis() rollover (~49 days).
+// The deadline is scheduled just before the wrap so it falls on the far side;
+// the old absolute comparison (millis() >= _next_tick) would have fired
+// immediately here instead of waiting.
+void test_survives_millis_wraparound(void)
+{
+	PeriodicTask task(1000);
+
+	_mock_millis = 0xFFFFFF00; // 2^32 - 256, just before the wrap
+	task.reset();              // deadline = (2^32 - 256) + 1000 -> 744 after wrap
+
+	// Still before the deadline, even though millis() is huge and _next_tick is
+	// tiny. Absolute comparison would wrongly fire here.
+	_mock_millis = 0xFFFFFFF0;
+	TEST_ASSERT_FALSE(task.tick());
+
+	// millis() has wrapped past zero and reached the deadline (744).
+	_mock_millis = 0x300; // 768
+	TEST_ASSERT_TRUE(task.tick());
+}
+
 int main(int, char **)
 {
 	UNITY_BEGIN();
@@ -114,5 +135,6 @@ int main(int, char **)
 	RUN_TEST(test_next_run_in_relative);
 	RUN_TEST(test_next_run_at_absolute);
 	RUN_TEST(test_stop_and_resume);
+	RUN_TEST(test_survives_millis_wraparound);
 	return UNITY_END();
 }

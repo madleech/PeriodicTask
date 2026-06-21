@@ -22,21 +22,28 @@
     SOFTWARE.
 */
 
-#define __STDC_LIMIT_MACROS
 #include <stdint.h>
 
 #include "PeriodicTask.h"
 #include "Arduino.h"
 
 PeriodicTask::PeriodicTask(uint32_t period)
-    : period(period), _next_tick(period)
+    : period(period), _next_tick(period), _stopped(false)
 {
 }
 
 // detect whether we should run this time or not
 bool PeriodicTask::tick()
 {
-	if (millis() >= _next_tick)
+	if (_stopped)
+		return false;
+
+	// Compare elapsed time using modular (wraparound-safe) arithmetic rather
+	// than absolute values. The unsigned subtraction wraps cleanly when millis()
+	// rolls over (roughly every 49 days), and the signed cast tells us whether
+	// we have reached _next_tick yet. This is correct as long as the scheduled
+	// interval stays below ~24.8 days (INT32_MAX milliseconds).
+	if ((int32_t)((uint32_t)millis() - _next_tick) >= 0)
 	{
 		reset();
 		return true;
@@ -50,19 +57,22 @@ bool PeriodicTask::tick()
 // tell this task to run asap
 void PeriodicTask::run_next_time()
 {
-	_next_tick = 0;
+	_next_tick = millis();
+	_stopped = false;
 }
 
 // when to run the task again (absolute time)
 void PeriodicTask::next_run_at(uint32_t next_tick)
 {
 	_next_tick = next_tick;
+	_stopped = false;
 }
 
 // when to run the task again (relative time)
 void PeriodicTask::next_run_in(uint32_t delay)
 {
 	_next_tick = millis() + delay;
+	_stopped = false;
 }
 
 // reset elapsed time to zero, i.e. delay running this task by its period
@@ -74,12 +84,15 @@ void PeriodicTask::reset()
 // stop running this task
 void PeriodicTask::stop()
 {
-	_next_tick = UINT32_MAX;
+	_stopped = true;
 }
 
 // start running again
 void PeriodicTask::resume()
 {
-	if (_next_tick == UINT32_MAX)
+	if (_stopped)
+	{
+		_stopped = false;
 		reset();
+	}
 }
