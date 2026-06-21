@@ -4,9 +4,9 @@
 
 Run tasks periodically without blocking, using `millis()`.
 
-`PeriodicTask` is a tiny, header-light scheduler for Arduino. Give it a period,
-call `tick()` from `loop()`, and it returns `true` each time the period elapses —
-no `delay()`, so the rest of your loop keeps running.
+`PeriodicTask` is a tiny task scheduler for Arduino. It allows writing clean code to run a block of code periodically, without having to keep track of state, worry around rollover/wraparound, correct types, etc.
+
+As an example, imagine you want to print some debug state every 30s. You can very cleanly create a `PeriodicTask debug_task(30000)`, then in your `loop()` function you can just use `if (debug_task.tick()) { ... }`. Nice and simple.
 
 ## Install
 
@@ -25,27 +25,25 @@ lib_deps = madleech/PeriodicTask
 ```cpp
 #include <PeriodicTask.h>
 
-PeriodicTask blinker(500);  // every 500 ms
-bool on = false;
+PeriodicTask hello_task(1000);  // every 1000ms / 1s
 
 void setup()
 {
-	pinMode(LED_BUILTIN, OUTPUT);
+	Serial.begin(9600);
 }
 
 void loop()
 {
-	if (blinker.tick())
+	if (hello_task.tick())
 	{
-		on = !on;
-		digitalWrite(LED_BUILTIN, on ? HIGH : LOW);
+		Serial.println("Hello world");
 	}
 
 	// other non-blocking work runs every loop()
 }
 ```
 
-See [`examples/Blink`](examples/Blink) for the full sketch. For a one-shot,
+See [`examples/Blink`](examples/Blink) for a full example. For a one-shot,
 on-demand task (armed with `next_run_in()` and kept dormant with `stop()`), see
 [`examples/DeferredTask`](examples/DeferredTask).
 
@@ -62,12 +60,6 @@ on-demand task (armed with `next_run_in()` and kept dormant with `stop()`), see
 | `void stop()` | Suspend the task; `tick()` returns `false` until resumed. |
 | `void resume()` | Resume a stopped task (next run one period out). |
 | `uint32_t period` | The period, in milliseconds. Writable. |
-
-## Notes
-
-Timing is based on the unsigned `millis()` counter, which wraps roughly every
-49 days. Comparisons use absolute time, so very long-running tasks may behave
-unexpectedly across a wrap.
 
 ## License
 

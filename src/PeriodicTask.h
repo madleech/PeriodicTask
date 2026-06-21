@@ -44,6 +44,7 @@ class PeriodicTask
 
   private:
 	uint32_t _next_tick;
+	bool _stopped;
 };
 
 #endif
