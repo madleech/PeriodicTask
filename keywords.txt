@@ -1,23 +1,26 @@
 #######################################
-# Syntax Coloring Map for PeriodTask library
+# Syntax Coloring Map for PeriodicTask library
 #######################################
 
 #######################################
 # Datatypes (KEYWORD1)
 #######################################
 
-PeriodicTask	 KEYWORD1
+PeriodicTask	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
 #######################################
 
-tick           KEYWORD2
-period         KEYWORD2
-run_next_time  KEYWORD2
-reset          KEYWORD2
+tick	KEYWORD2
+period	KEYWORD2
+run_next_time	KEYWORD2
+next_run_at	KEYWORD2
+next_run_in	KEYWORD2
+reset	KEYWORD2
+stop	KEYWORD2
+resume	KEYWORD2
 
 #######################################
 # Constants (LITERAL1)
 #######################################
-

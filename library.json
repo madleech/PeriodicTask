@@ -1,0 +1,19 @@
+{
+  "name": "PeriodicTask",
+  "version": "1.0.0",
+  "description": "Run tasks periodically without blocking, using millis().",
+  "keywords": "timer, scheduler, periodic, millis, non-blocking",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/madleech/PeriodicTask.git"
+  },
+  "authors": [
+    {
+      "name": "Michael Adams",
+      "url": "https://github.com/madleech"
+    }
+  ],
+  "license": "MIT",
+  "frameworks": "arduino",
+  "platforms": "*"
+}
